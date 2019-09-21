@@ -1,3 +1,4 @@
+.mypy_cache/
 apicache-py3/
 pywikibot.lwp
 throttle.ctrl
