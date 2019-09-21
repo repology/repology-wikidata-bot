@@ -11,16 +11,8 @@ matrix:
     - python: 3.8-dev
     - python: nightly
 before_install:
-  - pip install pywikibot
-  - pip install requests
-
-  # devel depends
-  - pip install flake8
-  - pip install flake8-builtins
-  - pip install flake8-import-order
-  - pip install flake8-quotes
-  - pip install mypy
-
+  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
 script:
   - mypy repology-wikidata-bot.py
   - flake8
