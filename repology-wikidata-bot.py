@@ -78,7 +78,7 @@ def run(options: argparse.Namespace) -> None:
                     ar.report('{} ({}): adding {}'.format(repo, prop, Colors.ACTION + item + Colors.ENDC))
 
                     if not options.dry_run:
-                        wikidata.add_claim(entry, prop, item, 'Adding package information from Repology')
+                        wikidata.add_claim(entry, prop, item, 'adding package information from Repology')
 
                 for item in extra:
                     ar.report('{} ({}): {} not present in Repology, needs investigation'.format(repo, prop, Colors.MANUAL + item + Colors.ENDC))
