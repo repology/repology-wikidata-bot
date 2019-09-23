@@ -30,6 +30,30 @@ REPO_TO_PROPERTY = {
 }
 
 
+class Colors:
+    ACTION = '\033[92m'
+    MANUAL = '\033[93m'
+    ENDC = '\033[0m'
+
+
+class ActionReporter:
+    _repology_project: str
+    _wikidata_entry: str
+    _header_shown: bool
+
+    def __init__(self, repology_project: str, wikidata_entry: str) -> None:
+        self._repology_project = repology_project
+        self._wikidata_entry = wikidata_entry
+        self._header_shown = False
+
+    def report(self, message: str) -> None:
+        if not self._header_shown:
+            print('===> {} ({})'.format(self._repology_project, self._wikidata_entry), file=sys.stderr)
+            self._header_shown = True
+
+        print(message, file=sys.stderr)
+
+
 def run(options: argparse.Namespace) -> None:
     wikidata = WikidataApi()
 
@@ -41,18 +65,23 @@ def run(options: argparse.Namespace) -> None:
             continue
 
         for entry in wikidata_entries:
+            ar = ActionReporter(project.name, entry)
+
             for repo, prop in REPO_TO_PROPERTY.items():
                 repology_values = set(project.package_names_by_repo.get(repo, []))
                 wikidata_values = set(wikidata.get_claims(entry, prop))
 
                 missing = repology_values - wikidata_values
+                extra = wikidata_values - repology_values
 
-                if missing:
-                    print('{}: {} ({}): adding {}'.format(project.name, repo, prop, ','.join(missing)), file=sys.stderr)
+                for item in missing:
+                    ar.report('{} ({}): adding {}'.format(repo, prop, Colors.ACTION + item + Colors.ENDC))
 
                     if not options.dry_run:
-                        for item in missing:
-                            wikidata.add_claim(entry, prop, item, 'Adding package information from Repology')
+                        wikidata.add_claim(entry, prop, item, 'Adding package information from Repology')
+
+                for item in extra:
+                    ar.report('{} ({}): {} not present in Repology, needs investigation'.format(repo, prop, Colors.MANUAL + item + Colors.ENDC))
 
 
 def parse_arguments() -> argparse.Namespace:
