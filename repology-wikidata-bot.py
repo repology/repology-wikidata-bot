@@ -33,6 +33,7 @@ REPO_TO_PROPERTY = {
 class Colors:
     ACTION = '\033[92m'
     MANUAL = '\033[93m'
+    NOACTION = '\033[94m'
     ENDC = '\033[0m'
 
 
@@ -52,6 +53,10 @@ class ActionReporter:
             self._header_shown = True
 
         print(message, file=sys.stderr)
+
+    def mention(self, message: str = Colors.NOACTION + 'no action needed' + Colors.ENDC) -> None:
+        if not self._header_shown:
+            self.report(message)
 
 
 def run(options: argparse.Namespace) -> None:
@@ -84,6 +89,9 @@ def run(options: argparse.Namespace) -> None:
                 for item in extra:
                     ar.report('{} ({}): {} not present in Repology, needs investigation'.format(repo, prop, Colors.MANUAL + item + Colors.ENDC))
 
+            if options.verbose:
+                ar.mention()
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -91,6 +99,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
 
     return parser.parse_args()
 
