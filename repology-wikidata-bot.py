@@ -33,7 +33,7 @@ REPO_TO_PROPERTY = {
 def run(options: argparse.Namespace) -> None:
     wikidata = WikidataApi()
 
-    for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.project_begin, end_name=options.project_end):
+    for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=getattr(options, 'from'), end_name=options.to):
         wikidata_entries = project.package_names_by_repo.get('wikidata')
 
         if wikidata_entries is None:
@@ -58,8 +58,8 @@ def run(options: argparse.Namespace) -> None:
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--repology-api', metavar='URL', default='https://repology.org/api/v1/projects/', help='URL of Repology projects API endpoint (must end with slash)')
-    parser.add_argument('--project-begin', metavar='NAME', help='project name to start with')
-    parser.add_argument('--project-end', metavar='NAME', help='project name to end with')
+    parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on')
+    parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
 
     return parser.parse_args()
