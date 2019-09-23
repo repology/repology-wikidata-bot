@@ -61,7 +61,7 @@ def _iterate_repology_project_packages(apiurl: str, begin_name: Optional[str] = 
         for name, packages in data.items():
             if name == pivot:
                 continue
-            if name >= end_name:
+            if end_name is not None and name >= end_name:
                 return
 
             yield _RepologyProjectPackages(name, packages)
