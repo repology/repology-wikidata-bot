@@ -30,7 +30,7 @@ class WikidataApi:
         self._site = pywikibot.Site('wikidata', 'wikidata')
         self._repo = self._site.data_repository()
 
-    def get_claims(self, entry: str, prop: str) -> List[str]:
+    def get_claims(self, entry: str, prop: str, allow_deprecated: bool=False) -> List[str]:
         item = pywikibot.ItemPage(self._repo, entry)
         item_dict = item.get()
         claims = item_dict['claims']
@@ -38,7 +38,7 @@ class WikidataApi:
         if prop not in claims:
             return []
 
-        return [claim.getTarget() for claim in claims[prop]]
+        return [claim.getTarget() for claim in claims[prop] if allow_deprecated or claim.getRank() != 'deprecated']
 
     def add_claim(self, entry: str, prop: str, value: str, summary: str) -> None:
         item = pywikibot.ItemPage(self._repo, entry)

@@ -70,8 +70,9 @@ def run(options: argparse.Namespace) -> None:
             for repo, prop in REPO_TO_PROPERTY.items():
                 repology_values = set(project.package_names_by_repo.get(repo, []))
                 wikidata_values = set(wikidata.get_claims(entry, prop))
+                wikidata_all_values = set(wikidata.get_claims(entry, prop, allow_deprecated=True))
 
-                missing = repology_values - wikidata_values
+                missing = repology_values - wikidata_all_values
                 extra = wikidata_values - repology_values
 
                 for item in missing:
