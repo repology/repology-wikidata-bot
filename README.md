@@ -16,36 +16,44 @@ Modules can be installed with `pip install -r requirements.txt` command.
 
 ## Running
 
-The bot is already set up to its wikidata account and Repology API url.
+The bot should run out of box, without any required arguments to specify.
+However, you may find the following options useful to test the bot before
+running it full-scale:
 
-You can run it in _dry-run_ mode right away - it will show what modifications it's going to perform, but won't actually do anything.
+- `--dry-run` - don't perform any actions in Wikidata, just report what's going to be done
+- `--verbose` - mention all projects retrieved from Repology, even they don't require any actions
+- `--from`, `--to` - limit operation to specific subset of projects
+
+An example output:
 
 ```
-% ./repology-wikidata-bot.py --dry-run
-6tunnel: gentoo (P3499): adding net-vpn/6tunnel
-a2jmidid: gentoo (P3499): adding media-sound/a2jmidid
-a2ps: gentoo (P3499): adding app-text/a2ps
-abiword: gentoo (P3499): adding app-office/abiword-docs
-abook: gentoo (P3499): adding app-misc/abook
-adom: gentoo (P3499): adding games-roguelike/adom
-aerc: gentoo (P3499): adding mail-client/aerc
-agda: gentoo (P3499): adding sci-mathematics/agda
-agg: gentoo (P3499): adding x11-libs/agg
-alacarte: gentoo (P3499): adding x11-misc/alacarte
-albert: gentoo (P3499): adding x11-misc/albert
-alembic: gentoo (P3499): adding media-gfx/alembic
-alienarena: gentoo (P3499): adding games-fps/alienarena
-amanda: gentoo (P3499): adding app-backup/amanda
-amavisd-new: gentoo (P3499): adding mail-filter/amavisd-new
-ampache: gentoo (P3499): adding www-apps/ampache
-^C
+% ./repology-wikidata-bot.py --from b --to bad --dry-run --verbose
+===> babel-llnl (Q4837697)
+no action needed
+===> babel.js (Q55604651)
+Packages/arch (P3454): babel-cli not present in Repology, needs investigation
+===> babl (Q28941635)
+Packages/aur (P4162): adding babl-git
+===> backintime (Q4839110)
+Packages/aur (P4162): adding backintime-cli-git
+Packages/aur (P4162): adding backintime-git
+Packages/aur (P4162): adding backintime-cli
+===> backuppc (Q798540)
+Packages/gentoo (P3499): adding app-backup/backuppc
+===> bacula (Q591063)
+Packages/aur (P4162): adding bacula-console
+Packages/aur (P4162): adding bacula-fd
+Packages/aur (P4162): adding bacula-dir-sqlite3
+Packages/aur (P4162): adding bacula-common
+Packages/aur (P4162): adding bacula-bat
+Packages/aur (P4162): adding bacula-client
+Packages/aur (P4162): adding bacula-dir-mysql
+Packages/aur (P4162): adding bacula-dir-postgresql
+Packages/aur (P4162): adding bacula5-client
+Packages/aur (P4162): adding bacula-sd
+Packages/aur (P4162): adding bacula-dir
+Packages/aur (P4162): adding bacula-dir-mariadb
 ```
-
-It lists repology project name, and packages list it's going to
-add. Without `--dry-run` it will add listed package entries to
-wikidata. You can limit it with a subset of packages with `--from`
-and `--to` arguments. For instance, `--from a --to b` will only
-operate on projects starting with `a`.
 
 ## Links
 
