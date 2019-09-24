@@ -22,7 +22,7 @@ running it full-scale:
 
 - `--dry-run` - don't perform any actions in Wikidata, just report what's going to be done
 - `--verbose` - mention all projects retrieved from Repology, even they don't require any actions
-- `--from`, `--to` - limit operation to specific subset of projects
+- `--from`, `--to` - limit operation to specified subset of project names
 
 An example output:
 
