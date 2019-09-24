@@ -19,15 +19,25 @@
 
 import argparse
 import sys
+from dataclasses import dataclass
 
 from repology_api import iterate_repology_projects
 
 from wikidata_api import WikidataApi
 
 
-REPO_TO_PROPERTY = {
-    'gentoo': 'P3499',
-}
+@dataclass
+class RepologyWikidataMapping:
+    repo: str
+    prop: str
+    field: str
+
+
+PACKAGE_MAPPINGS = [
+    RepologyWikidataMapping(repo='gentoo', prop='P3499', field='keyname'),
+    RepologyWikidataMapping(repo='arch', prop='P3454', field='name'),
+    RepologyWikidataMapping(repo='aur', prop='P4162', field='name'),
+]
 
 
 class Colors:
@@ -63,7 +73,7 @@ def run(options: argparse.Namespace) -> None:
     wikidata = WikidataApi()
 
     for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=getattr(options, 'from'), end_name=options.to):
-        wikidata_entries = project.package_names_by_repo.get('wikidata')
+        wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
 
         if wikidata_entries is None:
             # not present in wikidata
@@ -72,22 +82,25 @@ def run(options: argparse.Namespace) -> None:
         for entry in wikidata_entries:
             ar = ActionReporter(project.name, entry)
 
-            for repo, prop in REPO_TO_PROPERTY.items():
-                repology_values = set(project.package_names_by_repo.get(repo, []))
-                wikidata_values = set(wikidata.get_claims(entry, prop))
-                wikidata_all_values = set(wikidata.get_claims(entry, prop, allow_deprecated=True))
+            for mapping in PACKAGE_MAPPINGS:
+                repology_values = project.values_by_repo_field.get((mapping.repo, mapping.field), set())
+                wikidata_values = set(wikidata.get_claims(entry, mapping.prop))
+                wikidata_all_values = set(wikidata.get_claims(entry, mapping.prop, allow_deprecated=True))
 
                 missing = repology_values - wikidata_all_values
                 extra = wikidata_values - repology_values
 
-                for item in missing:
-                    ar.report('{} ({}): adding {}'.format(repo, prop, Colors.ACTION + item + Colors.ENDC))
+                for mitem in missing:
+                    ar.report('Packages/{} ({}): adding {}'.format(mapping.repo, mapping.prop, Colors.ACTION + mitem + Colors.ENDC))
 
                     if not options.dry_run:
-                        wikidata.add_claim(entry, prop, item, 'adding package information from Repology')
+                        wikidata.add_claim(entry, mapping.prop, mitem, 'adding package information from Repology')
 
-                for item in extra:
-                    ar.report('{} ({}): {} not present in Repology, needs investigation'.format(repo, prop, Colors.MANUAL + item + Colors.ENDC))
+                for eitem in extra:
+                    if eitem is None:
+                        ar.report('Packages/{} ({}): "{}no value{}" encountered, should be fixed'.format(mapping.repo, mapping.prop, Colors.MANUAL, Colors.ENDC))
+                    else:
+                        ar.report('Packages/{} ({}): {} not present in Repology, needs investigation'.format(mapping.repo, mapping.prop, Colors.MANUAL + eitem + Colors.ENDC))
 
             if options.verbose:
                 ar.mention()

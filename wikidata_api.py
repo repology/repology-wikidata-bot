@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with repology.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, List
+from typing import Any, List, Optional
 
 import pywikibot
 
@@ -30,7 +30,7 @@ class WikidataApi:
         self._site = pywikibot.Site('wikidata', 'wikidata')
         self._repo = self._site.data_repository()
 
-    def get_claims(self, entry: str, prop: str, allow_deprecated: bool=False) -> List[str]:
+    def get_claims(self, entry: str, prop: str, allow_deprecated: bool = False) -> List[Optional[str]]:
         item = pywikibot.ItemPage(self._repo, entry)
         item_dict = item.get()
         claims = item_dict['claims']

@@ -19,7 +19,7 @@
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, MutableSet, Optional, Tuple
 
 import requests
 
@@ -36,7 +36,7 @@ class _RepologyProjectPackages:
 @dataclass
 class RepologyProject:
     name: str
-    package_names_by_repo: Dict[str, List[str]]
+    values_by_repo_field: Dict[Tuple[str, str], MutableSet[str]]
 
 
 def _iterate_repology_project_packages(apiurl: str, begin_name: Optional[str] = None, end_name: Optional[str] = None, inrepo: str = 'wikidata') -> Iterable[_RepologyProjectPackages]:
@@ -71,12 +71,11 @@ def _iterate_repology_project_packages(apiurl: str, begin_name: Optional[str] = 
 
 def iterate_repology_projects(apiurl: str, begin_name: Optional[str] = None, end_name: Optional[str] = None) -> Iterable[RepologyProject]:
     for project in _iterate_repology_project_packages(apiurl, begin_name, end_name):
-        package_names_by_repo: Dict[str, List[str]] = defaultdict(list)
+        values_by_repo_field: Dict[Tuple[str, str], MutableSet[str]] = defaultdict(set)
 
         for package in project.packages:
-            if 'keyname' in package:
-                package_names_by_repo[package['repo']].append(package['keyname'])
+            for field in ['name', 'keyname']:
+                if field in package:
+                    values_by_repo_field[package['repo'], field].add(package[field])
 
-        package_names_by_repo = {repo: sorted(set(project_names)) for repo, project_names in package_names_by_repo.items()}
-
-        yield RepologyProject(project.name, package_names_by_repo)
+        yield RepologyProject(project.name, values_by_repo_field)
