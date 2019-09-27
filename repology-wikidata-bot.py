@@ -72,7 +72,7 @@ class ActionReporter:
 def run(options: argparse.Namespace) -> None:
     wikidata = WikidataApi()
 
-    for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=getattr(options, 'from'), end_name=options.to):
+    for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
         wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
 
         if wikidata_entries is None:
@@ -109,7 +109,7 @@ def run(options: argparse.Namespace) -> None:
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--repology-api', metavar='URL', default='https://repology.org/api/v1/projects/', help='URL of Repology projects API endpoint (must end with slash)')
-    parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on')
+    parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on', dest='from_')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
