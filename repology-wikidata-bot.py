@@ -117,7 +117,7 @@ def run(options: argparse.Namespace) -> None:
                     if eitem is None:
                         reporter.action_novalue()
                     else:
-                        reporter.action_remove(eitem, mapping.histurls)
+                        reporter.action_remove(eitem, mapping.url, mapping.histurls)
 
             if options.verbose >= 2:
                 reporter.action_fallback()

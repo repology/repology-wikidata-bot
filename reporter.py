@@ -77,8 +77,8 @@ class Reporter:
     def _print_action(self, message: str) -> None:
         print(self._prefix + message, file=sys.stderr)
 
-    def _print_html(self, html: str) -> None:
-        self._html.append(html)
+    def _print_html(self, html: str, cls: str) -> None:
+        self._html.append('<td class="table-{}">{}{}</td>'.format(cls, self._prefix, html))
 
     def _item_url(self, value: str, url: str) -> str:
         if self._verbose:
@@ -92,26 +92,31 @@ class Reporter:
         url = url_subst(url, value)
 
         self._print_action('adding ' + self._item_url(Colors.action(value), Colors.url(url)))
-        self._print_html('<td class="table-success">adding <a href="{}">{}</a></td>'.format(url, value))
+        self._print_html('adding <a href="{}">{}</a>'.format(url, value), 'success')
 
     def action_novalue(self) -> None:
         self._print_header()
         self._print_action(Colors.manual('no value') + ' encountered, please remove')
-        self._print_html('<td class="table-warning"><b>no value</b> encountered, please remove</td>')
+        self._print_html('<b>no value</b> encountered, please remove', 'warning')
 
-    def action_remove(self, value: str, urls: List[str]) -> None:
+    def action_remove(self, value: str, url: str, histurls: List[str]) -> None:
         self._print_header()
+
+        url = url_subst(url, value)
+
         self._print_action(
             '{} not present in Repology, needs investigation; see following urls:\n  {}'.format(
-                Colors.manual(value),
-                '\n  '.join(Colors.url(url_subst(url, value)) for url in urls)
+                self._item_url(Colors.manual(value), Colors.url(url)),
+                '\n  '.join(Colors.url(url_subst(url, value)) for url in histurls)
             )
         )
         self._print_html(
-            '<td class="table-danger">{} not present in Repology, needs investigation; see following urls: {}'.format(
+            '<a href="{}">{}</a> not present in Repology, needs investigation; see following urls: {}'.format(
+                url,
                 value,
-                ' '.join('<a href="{}">[{}]</a>'.format(url_subst(url, value), n) for n, url in enumerate(urls, 1))
-            )
+                ' '.join('<a href="{}">[{}]</a>'.format(url_subst(url, value), n) for n, url in enumerate(histurls, 1))
+            ),
+            'danger'
         )
 
     def action_fallback(self) -> None:
@@ -124,7 +129,7 @@ class Reporter:
             return ''
 
         html = '<tr>'
-        html += '<td rowspan="{}"><a href="{}">{}</a></td>'.format(len(self._html), url_subst('https://repology.org/project/{}', self._project), self._project)
+        html += '<td rowspan="{}"><a href="{}">{}</a></td>'.format(len(self._html), url_subst('https://repology.org/project/{}#wikidata', self._project), self._project)
         html += '<td rowspan="{}"><a href="{}">{}</a></td>'.format(len(self._html), url_subst('https://wikidata.org/wiki/{}', self._entity), self._entity)
         html += '{}'.format(self._html[0])
         html += '</tr>'
