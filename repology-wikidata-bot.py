@@ -63,6 +63,14 @@ PACKAGE_MAPPINGS = [
         url='https://aur.archlinux.org/packages/{}/',
         histurls=['https://aur.archlinux.org/cgit/aur.git/log/?h={}'],
     ),
+    # Waiting for https://www.wikidata.org/wiki/Wikidata:Property_proposal/FreeBSD_port to be approved
+    # RepologyWikidataMapping(
+    #    repo='freebsd',
+    #    prop='P????',
+    #    field='keyname',
+    #    url='https://www.freshports.org/{}',
+    #    histurls=['https://www.freshports.org/{}'],
+    # ),
 ]
 
 
