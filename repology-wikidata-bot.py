@@ -82,6 +82,7 @@ def run(options: argparse.Namespace) -> None:
     if options.html:
         html = open(options.html, 'w')
         html.write(Reporter.html_header())
+        html.flush()
 
     for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
         wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
@@ -123,9 +124,11 @@ def run(options: argparse.Namespace) -> None:
 
             if html:
                 html.write(reporter.dump_html())
+                html.flush()
 
     if html:
         html.write(Reporter.html_footer())
+        html.flush()
         html.close()
 
 
