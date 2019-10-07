@@ -83,6 +83,9 @@ def run(options: argparse.Namespace) -> None:
             ar = ActionReporter(project.name, entry)
 
             for mapping in PACKAGE_MAPPINGS:
+                if options.repositories and mapping.repo not in options.repositories and mapping.prop not in options.repositories:
+                    continue
+
                 repology_values = project.values_by_repo_field.get((mapping.repo, mapping.field), set())
                 wikidata_values = set(wikidata.get_claims(entry, mapping.prop))
                 wikidata_all_values = set(wikidata.get_claims(entry, mapping.prop, allow_deprecated=True))
@@ -113,6 +116,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
+    parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
 
     return parser.parse_args()
 
