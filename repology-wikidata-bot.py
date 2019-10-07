@@ -20,7 +20,7 @@
 import argparse
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import IO, List, Optional
 
 from repology_api import iterate_repology_projects
 
@@ -77,6 +77,12 @@ PACKAGE_MAPPINGS = [
 def run(options: argparse.Namespace) -> None:
     wikidata = WikidataApi()
 
+    html: Optional[IO[str]] = None
+
+    if options.html:
+        html = open(options.html, 'w')
+        html.write(Reporter.html_header())
+
     for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
         wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
 
@@ -115,6 +121,13 @@ def run(options: argparse.Namespace) -> None:
             if options.verbose >= 2:
                 reporter.action_fallback()
 
+            if html:
+                html.write(reporter.dump_html())
+
+    if html:
+        html.write(Reporter.html_footer())
+        html.close()
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -124,6 +137,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
+    parser.add_argument('--html', metavar='PATH', help='enable HTML output, specifying path to it')
 
     return parser.parse_args()
 
