@@ -110,7 +110,7 @@ class Reporter:
         self._print_html(
             '<td class="table-danger">{} not present in Repology, needs investigation; see following urls: {}'.format(
                 value,
-                ' '.join('[<a href="{}">{}</a>]'.format(url_subst(url, value), n) for n, url in enumerate(urls, 1))
+                ' '.join('<a href="{}">[{}]</a>'.format(url_subst(url, value), n) for n, url in enumerate(urls, 1))
             )
         )
 
