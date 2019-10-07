@@ -20,8 +20,11 @@
 import argparse
 import sys
 from dataclasses import dataclass
+from typing import List
 
 from repology_api import iterate_repology_projects
+
+from reporter import Reporter
 
 from wikidata_api import WikidataApi
 
@@ -31,42 +34,36 @@ class RepologyWikidataMapping:
     repo: str
     prop: str
     field: str
+    url: str
+    histurls: List[str]
 
 
 PACKAGE_MAPPINGS = [
-    RepologyWikidataMapping(repo='gentoo', prop='P3499', field='keyname'),
-    RepologyWikidataMapping(repo='arch', prop='P3454', field='name'),
-    RepologyWikidataMapping(repo='aur', prop='P4162', field='name'),
+    RepologyWikidataMapping(
+        repo='gentoo',
+        prop='P3499',
+        field='keyname',
+        url='https://packages.gentoo.org/packages/{}',
+        histurls=['https://gitweb.gentoo.org/repo/gentoo.git/log/{}'],
+    ),
+    RepologyWikidataMapping(
+        repo='arch',
+        prop='P3454',
+        field='name',
+        url='https://www.archlinux.org/packages/?q={}',
+        histurls=[
+            'https://git.archlinux.org/svntogit/packages.git/log/trunk?h=packages/{}'
+            'https://git.archlinux.org/svntogit/community.git/log/trunk?h=packages/{}',
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='aur',
+        prop='P4162',
+        field='name',
+        url='https://aur.archlinux.org/packages/{}/',
+        histurls=['https://aur.archlinux.org/cgit/aur.git/log/?h={}'],
+    ),
 ]
-
-
-class Colors:
-    ACTION = '\033[92m'
-    MANUAL = '\033[93m'
-    NOACTION = '\033[94m'
-    ENDC = '\033[0m'
-
-
-class ActionReporter:
-    _repology_project: str
-    _wikidata_entry: str
-    _header_shown: bool
-
-    def __init__(self, repology_project: str, wikidata_entry: str) -> None:
-        self._repology_project = repology_project
-        self._wikidata_entry = wikidata_entry
-        self._header_shown = False
-
-    def report(self, message: str) -> None:
-        if not self._header_shown:
-            print('===> {} ({})'.format(self._repology_project, self._wikidata_entry), file=sys.stderr)
-            self._header_shown = True
-
-        print(message, file=sys.stderr)
-
-    def mention(self, message: str = Colors.NOACTION + 'no action needed' + Colors.ENDC) -> None:
-        if not self._header_shown:
-            self.report(message)
 
 
 def run(options: argparse.Namespace) -> None:
@@ -80,7 +77,7 @@ def run(options: argparse.Namespace) -> None:
             continue
 
         for entry in wikidata_entries:
-            ar = ActionReporter(project.name, entry)
+            reporter = Reporter(project.name, entry, verbose=options.verbose >= 1)
 
             for mapping in PACKAGE_MAPPINGS:
                 if options.repositories and mapping.repo not in options.repositories and mapping.prop not in options.repositories:
@@ -93,20 +90,22 @@ def run(options: argparse.Namespace) -> None:
                 missing = repology_values - wikidata_all_values
                 extra = wikidata_values - repology_values
 
+                reporter.set_prefix('{} ({}): '.format(mapping.repo, mapping.prop))
+
                 for mitem in missing:
-                    ar.report('Packages/{} ({}): adding {}'.format(mapping.repo, mapping.prop, Colors.ACTION + mitem + Colors.ENDC))
+                    reporter.action_add(mitem, mapping.url)
 
                     if not options.dry_run:
                         wikidata.add_claim(entry, mapping.prop, mitem, 'adding package information from Repology')
 
                 for eitem in extra:
                     if eitem is None:
-                        ar.report('Packages/{} ({}): "{}no value{}" encountered, should be fixed'.format(mapping.repo, mapping.prop, Colors.MANUAL, Colors.ENDC))
+                        reporter.action_novalue()
                     else:
-                        ar.report('Packages/{} ({}): {} not present in Repology, needs investigation'.format(mapping.repo, mapping.prop, Colors.MANUAL + eitem + Colors.ENDC))
+                        reporter.action_remove(eitem, mapping.histurls)
 
-            if options.verbose:
-                ar.mention()
+            if options.verbose >= 2:
+                reporter.action_fallback()
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -115,7 +114,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on', dest='from_')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
-    parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
+    parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
 
     return parser.parse_args()
