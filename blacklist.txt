@@ -1,4 +1,6 @@
-beagle	# needs split in repology
-devede  # devede vs. devedeng
+beagle    # needs split in repology
+curl      # curl vs. libcurl
+devede    # devede vs. devedeng
 dtorrent  # ctorrent vs. dtorrent
-torque  # needs split in repology
+pycharm   # pro vs. community
+torque    # needs split in repology
