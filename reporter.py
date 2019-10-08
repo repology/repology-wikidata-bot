@@ -151,7 +151,7 @@ class Reporter:
                         <h1>Repology wikidata bot report</h1>
                         <table class="table table-sm table-hover">
                             <thead>
-                                <tr><th>Project</th><th>Wikidata entity</th><th>Action(s)</th></tr>
+                                <tr><th>Repology project</th><th>Wikidata entity</th><th>Action</th></tr>
                             </thead>
                             <tbody>
             """
