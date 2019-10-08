@@ -1,0 +1,4 @@
+beagle	# needs split in repology
+devede  # devede vs. devedeng
+dtorrent  # ctorrent vs. dtorrent
+torque  # needs split in repology

@@ -20,7 +20,7 @@
 import argparse
 import sys
 from dataclasses import dataclass
-from typing import IO, List, Optional
+from typing import IO, Iterable, List, Optional, Set
 
 from repology_api import iterate_repology_projects
 
@@ -74,7 +74,24 @@ PACKAGE_MAPPINGS = [
 ]
 
 
+def read_blacklist(path: str) -> Iterable[str]:
+    with open(path, 'r') as blacklist:
+        for line in blacklist:
+            item = line.split('#', 1)[0].strip()
+
+            if item:
+                yield item
+
+
 def run(options: argparse.Namespace) -> None:
+    blacklist: Set[str] = set()
+
+    if options.blacklist:
+        blacklist.update(read_blacklist(options.blacklist))
+
+    if options.exclude:
+        blacklist.update(options.exclude)
+
     wikidata = WikidataApi()
 
     html: Optional[IO[str]] = None
@@ -85,7 +102,7 @@ def run(options: argparse.Namespace) -> None:
         html.flush()
 
     for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
-        if options.exclude and project.name in options.exclude:
+        if project.name in blacklist:
             continue
 
         wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
@@ -141,6 +158,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on', dest='from_')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
     parser.add_argument('--exclude', metavar='NAME', nargs='*', help='exclude specified project names from processing')
+    parser.add_argument('--blacklist', default='blacklist.txt', help='path to blacklist with additional excludes')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
