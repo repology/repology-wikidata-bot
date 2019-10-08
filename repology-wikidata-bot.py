@@ -44,7 +44,9 @@ PACKAGE_MAPPINGS = [
         prop='P3499',
         field='keyname',
         url='https://packages.gentoo.org/packages/{}',
-        histurls=['https://gitweb.gentoo.org/repo/gentoo.git/log/{}'],
+        histurls=[
+            'https://gitweb.gentoo.org/repo/gentoo.git/log/{}'
+        ],
     ),
     RepologyWikidataMapping(
         repo='arch',
@@ -52,7 +54,7 @@ PACKAGE_MAPPINGS = [
         field='name',
         url='https://www.archlinux.org/packages/?q={}',
         histurls=[
-            'https://git.archlinux.org/svntogit/packages.git/log/trunk?h=packages/{}'
+            'https://git.archlinux.org/svntogit/packages.git/log/trunk?h=packages/{}',
             'https://git.archlinux.org/svntogit/community.git/log/trunk?h=packages/{}',
         ],
     ),
@@ -61,7 +63,9 @@ PACKAGE_MAPPINGS = [
         prop='P4162',
         field='name',
         url='https://aur.archlinux.org/packages/{}/',
-        histurls=['https://aur.archlinux.org/cgit/aur.git/log/?h={}'],
+        histurls=[
+            'https://aur.archlinux.org/cgit/aur.git/log/?h={}'
+        ],
     ),
     # Waiting for https://www.wikidata.org/wiki/Wikidata:Property_proposal/FreeBSD_port to be approved
     # RepologyWikidataMapping(
@@ -69,7 +73,9 @@ PACKAGE_MAPPINGS = [
     #    prop='P????',
     #    field='keyname',
     #    url='https://www.freshports.org/{}',
-    #    histurls=['https://www.freshports.org/{}'],
+    #    histurls=[
+    #       'https://www.freshports.org/{}'
+    #    ],
     # ),
 ]
 
