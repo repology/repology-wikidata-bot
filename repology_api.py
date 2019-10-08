@@ -59,12 +59,13 @@ def _iterate_repology_project_packages(apiurl: str, begin_name: Optional[str] = 
 
         # iterate all packages got from Repology and group by repository
         for name, packages in data.items():
-            if name == pivot:
+            if name != begin_name and name == pivot:
                 continue
-            if end_name is not None and name >= end_name:
-                return
 
             yield _RepologyProjectPackages(name, packages)
+
+            if end_name is not None and name >= end_name:
+                return
 
         pivot = max(data.keys())
 
