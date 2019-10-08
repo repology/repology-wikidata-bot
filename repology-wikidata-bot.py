@@ -85,6 +85,9 @@ def run(options: argparse.Namespace) -> None:
         html.flush()
 
     for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
+        if options.exclude and project.name in options.exclude:
+            continue
+
         wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
 
         if wikidata_entries is None:
@@ -137,6 +140,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--repology-api', metavar='URL', default='https://repology.org/api/v1/projects/', help='URL of Repology projects API endpoint (must end with slash)')
     parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on', dest='from_')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
+    parser.add_argument('--exclude', metavar='NAME', nargs='*', help='exclude specified project names from processing')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
