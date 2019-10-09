@@ -11,7 +11,7 @@ matrix:
     - python: 3.8-dev
     - python: nightly
 before_install:
-  - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
 script:
-  - make lint
+  - make flake8
+  - make mypy
