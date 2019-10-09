@@ -128,6 +128,10 @@ def run(options: argparse.Namespace) -> None:
                 wikidata_values = set(wikidata.get_claims(entry, mapping.prop))
                 wikidata_all_values = set(wikidata.get_claims(entry, mapping.prop, allow_deprecated=True))
 
+                if len(repology_values) > options.max_entries:
+                    reporter.action_toomany(len(repology_values))
+                    continue
+
                 missing = repology_values - wikidata_all_values
                 extra = wikidata_values - repology_values
 
@@ -169,6 +173,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
     parser.add_argument('--html', metavar='PATH', help='enable HTML output, specifying path to it')
+    parser.add_argument('--max-entries', default=50, help='skip projects with more packages than this')
 
     return parser.parse_args()
 

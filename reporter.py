@@ -37,6 +37,10 @@ class Colors:
     def noaction(string: str) -> str:
         return '\033[94m' + string + '\033[0m'
 
+    @staticmethod
+    def toomany(string: str) -> str:
+        return '\033[95m' + string + '\033[0m'
+
 
 def url_subst(url: str, item: str) -> str:
     return url.format(quote(item))
@@ -118,6 +122,12 @@ class Reporter:
             ),
             'danger'
         )
+
+    def action_toomany(self, count: int) -> None:
+        self._print_header()
+
+        self._print_action(Colors.toomany('too many ({}) packages in Repology, skipping'.format(count)))
+        self._print_html('too many ({}) packages in Repology, skipping'.format(count), 'warning')
 
     def action_fallback(self) -> None:
         if not self._printed_header:
