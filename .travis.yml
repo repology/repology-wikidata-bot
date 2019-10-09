@@ -15,3 +15,5 @@ before_install:
 script:
   - make flake8
   - make mypy
+  # Run bot (in read only mode, on a single project) as a smoke test
+  - ./repology-wikidata-bot.py --dry-run --verbose --from firefox --to firefox
