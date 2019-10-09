@@ -1,4 +1,3 @@
-beagle    # needs split in repology
 curl      # curl vs. libcurl
 devede    # devede vs. devedeng
 dtorrent  # ctorrent vs. dtorrent
