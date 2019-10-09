@@ -4,3 +4,4 @@ devede    # devede vs. devedeng
 dtorrent  # ctorrent vs. dtorrent
 pycharm   # pro vs. community
 torque    # needs split in repology
+fonts:noto
