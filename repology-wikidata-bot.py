@@ -128,20 +128,19 @@ def run(options: argparse.Namespace) -> None:
                 wikidata_values = set(wikidata.get_claims(entry, mapping.prop))
                 wikidata_all_values = set(wikidata.get_claims(entry, mapping.prop, allow_deprecated=True))
 
-                if len(repology_values) > options.max_entries:
-                    reporter.action_toomany(len(repology_values))
-                    continue
-
                 missing = repology_values - wikidata_all_values
                 extra = wikidata_values - repology_values
 
                 reporter.set_prefix('{} ({}): '.format(mapping.repo, mapping.prop))
 
-                for mitem in missing:
-                    reporter.action_add(mitem, mapping.url)
+                if missing and len(repology_values) > options.max_entries:
+                    reporter.action_toomany(len(repology_values))
+                else:
+                    for mitem in missing:
+                        reporter.action_add(mitem, mapping.url)
 
-                    if not options.dry_run:
-                        wikidata.add_claim(entry, mapping.prop, mitem, 'adding package information from Repology')
+                        if not options.dry_run:
+                            wikidata.add_claim(entry, mapping.prop, mitem, 'adding package information from Repology')
 
                 for eitem in extra:
                     if eitem is None:
