@@ -76,6 +76,15 @@ PACKAGE_MAPPINGS = [
            'https://www.freshports.org/{}'
         ],
     ),
+    RepologyWikidataMapping(
+        repo='libregamewiki',
+        prop='P6666',
+        field='keyname',
+        url='https://libregamewiki.org/{}',
+        histurls=[
+            'https://libregamewiki.org/{}'
+        ],
+    ),
 ]
 
 
