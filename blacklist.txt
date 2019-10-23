@@ -4,3 +4,31 @@ dtorrent  # ctorrent vs. dtorrent
 pycharm   # pro vs. community
 torque    # needs split in repology
 fonts:noto
+
+facter
+ffext:ublock-origin
+gnome-calculator
+gridengine
+iproute2
+perkeep
+
+puma
+riot
+
+ion3
+newsboat
+bro
+eclipse
+
+eiskaltdcpp #dup in wikidata
+fetchmail # dup in wikidata
+openoffice # dup in wikidata
+
+polkit # freebsd wtf
+ruby:bio # freebsd wtf
+
+step # split
+xsel # split vs. conrad
+libxml2 # vs. libxml1
+podman # ???
+glassfish # ???
