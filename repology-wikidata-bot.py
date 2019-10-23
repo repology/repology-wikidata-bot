@@ -73,7 +73,7 @@ PACKAGE_MAPPINGS = [
         field='keyname',
         url='https://www.freshports.org/{}',
         histurls=[
-           'https://www.freshports.org/{}'
+            'https://www.freshports.org/{}'
         ],
     ),
     RepologyWikidataMapping(
