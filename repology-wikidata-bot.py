@@ -20,7 +20,7 @@
 import argparse
 import sys
 from dataclasses import dataclass
-from typing import IO, Iterable, List, Optional, Set
+from typing import IO, List, Optional, Set
 
 from repology_api import iterate_repology_projects
 
@@ -88,23 +88,25 @@ PACKAGE_MAPPINGS = [
 ]
 
 
-def read_blacklist(path: str) -> Iterable[str]:
-    with open(path, 'r') as blacklist:
-        for line in blacklist:
-            item = line.split('#', 1)[0].strip()
-
-            if item:
-                yield item
-
-
-def run(options: argparse.Namespace) -> None:
+def construct_blacklist(options: argparse.Namespace) -> Set[str]:
     blacklist: Set[str] = set()
 
     if options.blacklist:
-        blacklist.update(read_blacklist(options.blacklist))
+        with open(options.blacklist, 'r') as blacklist_fd:
+            for line in blacklist_fd:
+                item = line.split('#', 1)[0].strip()
+
+                if item:
+                    blacklist.add(item)
 
     if options.exclude:
         blacklist.update(options.exclude)
+
+    return blacklist
+
+
+def run(options: argparse.Namespace) -> None:
+    blacklist = construct_blacklist(options)
 
     wikidata = WikidataApi()
 
