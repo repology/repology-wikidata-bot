@@ -126,6 +126,9 @@ def run(options: argparse.Namespace) -> None:
             continue
 
         for entry in wikidata_entries:
+            if entry in blacklist:
+                continue
+
             reporter = Reporter(project.name, entry, verbose=options.verbose >= 1)
 
             for mapping in PACKAGE_MAPPINGS:
@@ -174,7 +177,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--repology-api', metavar='URL', default='https://repology.org/api/v1/projects/', help='URL of Repology projects API endpoint (must end with slash)')
     parser.add_argument('--from', metavar='NAME', help='minimal project name to operate on', dest='from_')
     parser.add_argument('--to', metavar='NAME', help='maximal project name to operate on')
-    parser.add_argument('--exclude', metavar='NAME', nargs='*', help='exclude specified project names from processing')
+    parser.add_argument('--exclude', metavar='NAME', nargs='*', help='exclude specified project names or wikidata items from processing')
     parser.add_argument('--blacklist', default='blacklist.txt', help='path to blacklist with additional excludes')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
