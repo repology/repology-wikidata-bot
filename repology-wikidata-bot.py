@@ -36,6 +36,7 @@ class RepologyWikidataMapping:
     field: str
     url: str
     histurls: List[str]
+    ignore_missing: bool = False
 
 
 PACKAGE_MAPPINGS = [
@@ -66,6 +67,10 @@ PACKAGE_MAPPINGS = [
         histurls=[
             'https://aur.archlinux.org/cgit/aur.git/log/?h={}'
         ],
+        # it seems like packages disappear from AUR index when they are moved
+        # to primary Arch repos, but they still remain in AUR VCS; let's just
+        # skip these
+        ignore_missing=True,
     ),
     RepologyWikidataMapping(
         repo='freebsd',
@@ -84,6 +89,9 @@ PACKAGE_MAPPINGS = [
         histurls=[
             'https://libregamewiki.org/{}'
         ],
+        # Repology data on LGW is incomplete (investigating), so silence missing
+        # entries as well
+        ignore_missing=True,
     ),
 ]
 
@@ -158,7 +166,7 @@ def run(options: argparse.Namespace) -> None:
                 for eitem in extra:
                     if eitem is None:
                         reporter.action_novalue()
-                    else:
+                    elif not mapping.ignore_missing:
                         reporter.action_remove(eitem, mapping.url, mapping.histurls)
 
             if options.verbose >= 2:
