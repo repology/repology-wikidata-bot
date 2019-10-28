@@ -2,7 +2,9 @@ curl      # curl vs. libcurl
 devede    # devede vs. devedeng
 dtorrent  # ctorrent vs. dtorrent
 pycharm   # pro vs. community
-torque    # needs split in repology
+fetchmail # fetchmail vs. fetchmailconf
+openoffice # apache openoffice vs. openoffice.org
+
 fonts:noto
 
 facter
@@ -19,10 +21,6 @@ ion3
 newsboat
 bro
 eclipse
-
-eiskaltdcpp #dup in wikidata
-fetchmail # dup in wikidata
-openoffice # dup in wikidata
 
 polkit # freebsd wtf
 ruby:bio # freebsd wtf
