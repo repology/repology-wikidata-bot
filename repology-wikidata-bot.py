@@ -167,8 +167,8 @@ def run(options: argparse.Namespace) -> None:
             for project in projects:
                 repology_values.update(project.values_by_repo_field.get((mapping.repo, mapping.field), []))
 
-            wikidata_values = set(wikidata.get_claims(item, mapping.prop))
-            wikidata_all_values = set(wikidata.get_claims(item, mapping.prop, allow_deprecated=True))
+            wikidata_values = set(wikidata.iter_claims(item, mapping.prop))
+            wikidata_all_values = set(wikidata.iter_claims(item, mapping.prop, allow_deprecated=True))
 
             missing = repology_values - wikidata_all_values
             extra = wikidata_values - repology_values

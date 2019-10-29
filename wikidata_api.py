@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with repology.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, List, Optional
+from typing import Any, Iterable, Optional
 
 import pywikibot
 
@@ -30,15 +30,20 @@ class WikidataApi:
         self._site = pywikibot.Site('wikidata', 'wikidata')
         self._repo = self._site.data_repository()
 
-    def get_claims(self, entry: str, prop: str, allow_deprecated: bool = False) -> List[Optional[str]]:
+    def iter_claims(self, entry: str, prop: str, allow_deprecated: bool = False) -> Iterable[Optional[str]]:
         item = pywikibot.ItemPage(self._repo, entry)
         item_dict = item.get()
         claims = item_dict['claims']
 
         if prop not in claims:
-            return []
+            return
 
-        return [claim.getTarget() for claim in claims[prop] if allow_deprecated or claim.getRank() != 'deprecated']
+        for claim in claims[prop]:
+            deprecated = claim.getRank() == 'deprecated'
+            expired = 'P582' in claim.qualifiers
+
+            if allow_deprecated or not (deprecated or expired):
+                yield claim.getTarget()
 
     def add_claim(self, entry: str, prop: str, value: str, summary: str) -> None:
         item = pywikibot.ItemPage(self._repo, entry)
