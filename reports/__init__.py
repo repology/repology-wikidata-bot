@@ -16,7 +16,7 @@
 # along with repology.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 from typing import Dict, Iterable, List, Tuple
 
 from actions import Action
@@ -37,4 +37,4 @@ def aggregate_report(actions: Iterable[Action]) -> Iterable[ReportItem]:
 
     for key, actions in sorted(by_item.items()):
         if actions:
-            yield ReportItem(key[0], list(key[1:]), sorted(actions))
+            yield ReportItem(key[0], list(key[1:]), sorted(actions, key=astuple))
