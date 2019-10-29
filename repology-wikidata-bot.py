@@ -19,12 +19,19 @@
 
 import argparse
 import sys
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import IO, List, Optional, Set
+from typing import Dict, List, Set
 
-from repology_api import iterate_repology_projects
+from actions import Action, ActionPerformer, AddPropertyAction, MultipleItemsAction, NoValueAction, RemovePropertyAction, TooManyValuesAction
 
-from reporter import Reporter
+from progress import progressify
+
+from repology_api import RepologyProject, iterate_repology_projects
+
+from reports import aggregate_report
+from reports.html import format_html_report
+from reports.text import format_text_report
 
 from wikidata_api import WikidataApi
 
@@ -113,73 +120,124 @@ def construct_blacklist(options: argparse.Namespace) -> Set[str]:
     return blacklist
 
 
-def run(options: argparse.Namespace) -> None:
+ProjectsByItem = Dict[str, List[RepologyProject]]
+
+
+def gather_repology_projects(options: argparse.Namespace) -> ProjectsByItem:
     blacklist = construct_blacklist(options)
+
+    projects_by_item: ProjectsByItem = defaultdict(list)
+
+    repology_iter = iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to)
+
+    for project in progressify(repology_iter, 'Gathering projects from Repology'):
+        if project.name not in blacklist:
+            for item in project.values_by_repo_field.get(('wikidata', 'keyname'), []):
+                if item not in blacklist:
+                    projects_by_item[item].append(project)
+
+    return projects_by_item
+
+
+def run(options: argparse.Namespace) -> None:
+    projects_by_item = gather_repology_projects(options)
 
     wikidata = WikidataApi()
 
-    html: Optional[IO[str]] = None
+    actions: List[Action] = []
 
-    if options.html:
-        html = open(options.html, 'w')
-        html.write(Reporter.html_header())
-        html.flush()
+    for item, projects in progressify(projects_by_item.items(), 'Comparing to Wikidata'):
+        projectnames = list(project.name for project in projects)
 
-    for project in iterate_repology_projects(apiurl=options.repology_api, begin_name=options.from_, end_name=options.to):
-        if project.name in blacklist:
+        wikidata_items: Set[str] = set()
+
+        for project in projects:
+            wikidata_items.update(project.values_by_repo_field.get(('wikidata', 'keyname'), []))
+
+        if len(wikidata_items) > 1:
+            actions.append(MultipleItemsAction(item=item, projectnames=projectnames))
             continue
 
-        wikidata_entries = project.values_by_repo_field.get(('wikidata', 'keyname'))
-
-        if wikidata_entries is None:
-            # not present in wikidata
-            continue
-
-        for entry in wikidata_entries:
-            if entry in blacklist:
+        for mapping in PACKAGE_MAPPINGS:
+            if options.repositories and mapping.repo not in options.repositories and mapping.prop not in options.repositories:
                 continue
 
-            reporter = Reporter(project.name, entry, verbose=options.verbose >= 1)
+            repology_values: Set[str] = set()
 
-            for mapping in PACKAGE_MAPPINGS:
-                if options.repositories and mapping.repo not in options.repositories and mapping.prop not in options.repositories:
-                    continue
+            for project in projects:
+                repology_values.update(project.values_by_repo_field.get((mapping.repo, mapping.field), []))
 
-                repology_values = project.values_by_repo_field.get((mapping.repo, mapping.field), set())
-                wikidata_values = set(wikidata.get_claims(entry, mapping.prop))
-                wikidata_all_values = set(wikidata.get_claims(entry, mapping.prop, allow_deprecated=True))
+            wikidata_values = set(wikidata.get_claims(item, mapping.prop))
+            wikidata_all_values = set(wikidata.get_claims(item, mapping.prop, allow_deprecated=True))
 
-                missing = repology_values - wikidata_all_values
-                extra = wikidata_values - repology_values
+            missing = repology_values - wikidata_all_values
+            extra = wikidata_values - repology_values
 
-                reporter.set_prefix('{} ({}): '.format(mapping.repo, mapping.prop))
+            if missing and len(repology_values) > options.max_entries:
+                actions.append(
+                    TooManyValuesAction(
+                        item=item,
+                        projectnames=projectnames,
+                        repo=mapping.repo,
+                        prop=mapping.prop,
+                        count=len(repology_values)
+                    )
+                )
+            else:
+                for mvalue in missing:
+                    actions.append(
+                        AddPropertyAction(
+                            item=item,
+                            projectnames=projectnames,
+                            repo=mapping.repo,
+                            prop=mapping.prop,
+                            value=mvalue,
+                            url=mapping.url.format(mvalue)
+                        )
+                    )
 
-                if missing and len(repology_values) > options.max_entries:
-                    reporter.action_toomany(len(repology_values))
-                else:
-                    for mitem in missing:
-                        reporter.action_add(mitem, mapping.url)
-
-                        if not options.dry_run:
-                            wikidata.add_claim(entry, mapping.prop, mitem, 'adding package information from Repology')
-
-                for eitem in extra:
-                    if eitem is None:
-                        reporter.action_novalue()
+                for evalue in extra:
+                    if evalue is None:
+                        actions.append(
+                            NoValueAction(
+                                item=item,
+                                projectnames=projectnames,
+                                repo=mapping.repo,
+                                prop=mapping.prop,
+                            )
+                        )
                     elif not mapping.ignore_missing:
-                        reporter.action_remove(eitem, mapping.url, mapping.histurls)
+                        actions.append(
+                            RemovePropertyAction(
+                                item=item,
+                                projectnames=projectnames,
+                                repo=mapping.repo,
+                                prop=mapping.prop,
+                                value=evalue,
+                                url=mapping.url.format(evalue),
+                                histurls=[url.format(evalue) for url in mapping.histurls]
+                            )
+                        )
 
-            if options.verbose >= 2:
-                reporter.action_fallback()
+    print('Listing actions', file=sys.stderr)
+    report = list(aggregate_report(actions))
+    format_text_report(report, options.verbose)
 
-            if html:
-                html.write(reporter.dump_html())
-                html.flush()
+    if options.html:
+        with open(options.html, 'w') as html:
+            html.write(format_html_report(report))
 
-    if html:
-        html.write(Reporter.html_footer())
-        html.flush()
-        html.close()
+    if options.dry_run:
+        return
+
+    if not options.yes:
+        print('Apply listed changes [Y/n]? ', end='', file=sys.stderr)
+        if input() not in ['', 'y', 'Y']:
+            return
+
+    performer = ActionPerformer(wikidata)
+    for action in progressify(actions, 'Applying actions'):
+        performer.perform(action)
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -190,7 +248,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--exclude', metavar='NAME', nargs='*', help='exclude specified project names or wikidata items from processing')
     parser.add_argument('--blacklist', default='blacklist.txt', help='path to blacklist with additional excludes')
     parser.add_argument('-n', '--dry-run', action='store_true', help='perform a trial run with no changes made')
-    parser.add_argument('-v', '--verbose', default=0, action='count', help='verbose mode (may specify twice)')
+    parser.add_argument('-y', '--yes', action='store_true', help='assume yes')
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
     parser.add_argument('--repositories', nargs='*', help='limit operation to specifiad list of repositories (may use either repology names or wikidata properties)')
     parser.add_argument('--html', metavar='PATH', help='enable HTML output, specifying path to it')
     parser.add_argument('--max-entries', default=50, help='skip projects with more packages than this')
