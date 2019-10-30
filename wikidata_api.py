@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with repology.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, Tuple
 
 import pywikibot
 
@@ -25,15 +25,27 @@ import pywikibot
 class WikidataApi:
     _site: Any
     _repo: Any
+    _cache_item: str
+    _cache_page: Any
 
     def __init__(self) -> None:
         self._site = pywikibot.Site('wikidata', 'wikidata')
         self._repo = self._site.data_repository()
+        self._cache_item = ''
+        self._cache_item = None
 
-    def iter_claims(self, entry: str, prop: str, allow_deprecated: bool = False) -> Iterable[Optional[str]]:
-        item = pywikibot.ItemPage(self._repo, entry)
-        item_dict = item.get()
-        claims = item_dict['claims']
+    def _get_page(self, item: str) -> Any:
+        if self._cache_item != item:
+            self._cache_item = item
+            self._cache_page = pywikibot.ItemPage(self._repo, item)
+
+        return self._cache_page
+
+    def iter_claims(self, item: str, prop: str, allow_deprecated: bool = False) -> Iterable[Optional[str]]:
+        page = self._get_page(item)
+
+        page_dict = page.get()
+        claims = page_dict['claims']
 
         if prop not in claims:
             return
@@ -45,10 +57,10 @@ class WikidataApi:
             if allow_deprecated or not (deprecated or expired):
                 yield claim.getTarget()
 
-    def add_claim(self, entry: str, prop: str, value: str, summary: str) -> None:
-        item = pywikibot.ItemPage(self._repo, entry)
+    def add_claim(self, item: str, prop: str, value: str, summary: str) -> None:
+        page = self._get_page(item)
 
         claim = pywikibot.Claim(self._repo, prop)
         claim.setTarget(value)
 
-        item.addClaim(claim, summary=summary)
+        page.addClaim(claim, summary=summary)
