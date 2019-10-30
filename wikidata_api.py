@@ -58,7 +58,7 @@ class WikidataApi:
                 yield claim.getTarget()
 
     def add_claim(self, item: str, prop: str, value: str, summary: str) -> None:
-        page = self._get_page(item)
+        page = pywikibot.ItemPage(self._repo, item)
 
         claim = pywikibot.Claim(self._repo, prop)
         claim.setTarget(value)
