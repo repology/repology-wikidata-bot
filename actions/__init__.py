@@ -18,7 +18,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from wikidata_api import WikidataApi
+from apis.wikidata import WikidataApi
 
 
 @dataclass

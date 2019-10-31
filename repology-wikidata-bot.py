@@ -25,15 +25,14 @@ from typing import Dict, List, Set
 
 from actions import Action, ActionPerformer, AddPropertyAction, MultipleItemsAction, NoValueAction, RemovePropertyAction, TooManyValuesAction
 
-from progress import progressify
-
-from repology_api import RepologyProject, iterate_repology_projects
+from apis.repology import RepologyProject, iterate_repology_projects
+from apis.wikidata import WikidataApi
 
 from reports import aggregate_report
 from reports.html import format_html_report
 from reports.text import format_text_report
 
-from wikidata_api import WikidataApi
+from utils.progress import progressify
 
 
 @dataclass
