@@ -6,6 +6,8 @@ Update Wikidata entries using information from Repology.
 
 This bot iterates over software projects listed [Repology](https://repology.org/) which have associated (by specifying [Repology project name](https://www.wikidata.org/wiki/Property:P6931) property for a software project in Wikidata) Wikidata entry, and fills package information (such as [Gentoo package](https://www.wikidata.org/wiki/Property:P3499) property).
 
+![Screenshot of the bot report](docs/report.png)
+
 ## Dependencies
 
 - [Python](https://www.python.org/) 3.7+
