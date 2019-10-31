@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with repology.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Iterable, Optional, Tuple
+from typing import Any, Iterable, Optional
 
 import pywikibot
 
@@ -32,7 +32,7 @@ class WikidataApi:
         self._site = pywikibot.Site('wikidata', 'wikidata')
         self._repo = self._site.data_repository()
         self._cache_item = ''
-        self._cache_item = None
+        self._cache_page = None
 
     def _get_page(self, item: str) -> Any:
         if self._cache_item != item:
