@@ -12,3 +12,6 @@ flake8::
 
 mypy::
 	${MYPY} --strict repology-wikidata-bot.py
+
+run:
+	./repology-wikidata-bot.py --html report.html
