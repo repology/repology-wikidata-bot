@@ -14,7 +14,6 @@ gridengine
 iproute2
 perkeep
 
-puma
 riot
 
 ion3
