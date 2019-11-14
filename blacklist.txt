@@ -20,5 +20,4 @@ ion3
 newsboat
 eclipse
 
-step # split
 libxml2 # vs. libxml1
