@@ -4,13 +4,13 @@ dtorrent  # ctorrent vs. dtorrent
 pycharm   # pro vs. community
 fetchmail # fetchmail vs. fetchmailconf
 openoffice # apache openoffice vs. openoffice.org
+gridengine # mess of sun vs. oracle vs. univa forks
 
 fonts:noto
 
 facter
 ffext:ublock-origin
 gnome-calculator
-gridengine
 iproute2
 
 riot
