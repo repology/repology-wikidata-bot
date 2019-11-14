@@ -22,8 +22,6 @@ newsboat
 bro
 eclipse
 
-ruby:bio # freebsd wtf
-
 step # split
 xsel # split vs. conrad
 libxml2 # vs. libxml1
