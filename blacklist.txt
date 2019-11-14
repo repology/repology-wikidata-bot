@@ -12,7 +12,6 @@ ffext:ublock-origin
 gnome-calculator
 gridengine
 iproute2
-perkeep
 
 riot
 
