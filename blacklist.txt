@@ -9,7 +9,6 @@ gridengine # mess of sun vs. oracle vs. univa forks
 fonts:noto
 
 facter
-ffext:ublock-origin
 gnome-calculator
 
 riot
