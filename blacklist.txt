@@ -25,5 +25,4 @@ eclipse
 step # split
 xsel # split vs. conrad
 libxml2 # vs. libxml1
-podman # ???
 glassfish # ???
