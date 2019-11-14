@@ -22,7 +22,6 @@ newsboat
 bro
 eclipse
 
-polkit # freebsd wtf
 ruby:bio # freebsd wtf
 
 step # split
