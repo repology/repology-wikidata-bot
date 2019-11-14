@@ -18,7 +18,6 @@ riot
 
 ion3
 newsboat
-bro
 eclipse
 
 step # split
