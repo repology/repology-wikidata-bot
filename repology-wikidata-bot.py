@@ -49,7 +49,7 @@ PACKAGE_MAPPINGS = [
     RepologyWikidataMapping(
         repo='gentoo',
         prop='P3499',
-        field='keyname',
+        field='srcname',
         url='https://packages.gentoo.org/packages/{}',
         histurls=[
             'https://gitweb.gentoo.org/repo/gentoo.git/log/{}'
@@ -58,7 +58,7 @@ PACKAGE_MAPPINGS = [
     RepologyWikidataMapping(
         repo='arch',
         prop='P3454',
-        field='name',
+        field='binname',
         url='https://www.archlinux.org/packages/?q={}',
         histurls=[
             'https://git.archlinux.org/svntogit/packages.git/log/trunk?h=packages/{}',
@@ -68,7 +68,7 @@ PACKAGE_MAPPINGS = [
     RepologyWikidataMapping(
         repo='aur',
         prop='P4162',
-        field='name',
+        field='binname',
         url='https://aur.archlinux.org/packages/{}/',
         histurls=[
             'https://aur.archlinux.org/cgit/aur.git/log/?h={}'
@@ -81,7 +81,7 @@ PACKAGE_MAPPINGS = [
     RepologyWikidataMapping(
         repo='freebsd',
         prop='P7427',
-        field='keyname',
+        field='srcname',
         url='https://www.freshports.org/{}',
         histurls=[
             'https://www.freshports.org/{}'
@@ -90,7 +90,7 @@ PACKAGE_MAPPINGS = [
     RepologyWikidataMapping(
         repo='libregamewiki',
         prop='P6666',
-        field='keyname',
+        field='name',
         url='https://libregamewiki.org/{}',
         histurls=[
             'https://libregamewiki.org/{}'
@@ -131,7 +131,7 @@ def gather_repology_projects(options: argparse.Namespace) -> ProjectsByItem:
 
     for project in progressify(repology_iter, 'Gathering projects from Repology'):
         if project.name not in blacklist:
-            for item in project.values_by_repo_field.get(('wikidata', 'keyname'), []):
+            for item in project.values_by_repo_field.get(('wikidata', 'name'), []):
                 if item not in blacklist:
                     projects_by_item[item].append(project)
 
@@ -151,7 +151,7 @@ def run(options: argparse.Namespace) -> None:
         wikidata_items: Set[str] = set()
 
         for project in projects:
-            wikidata_items.update(project.values_by_repo_field.get(('wikidata', 'keyname'), []))
+            wikidata_items.update(project.values_by_repo_field.get(('wikidata', 'name'), []))
 
         if len(wikidata_items) > 1:
             actions.append(MultipleItemsAction(item=item, projectnames=projectnames))

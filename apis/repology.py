@@ -73,7 +73,7 @@ def iterate_repology_projects(apiurl: str, begin_name: Optional[str] = None, end
         values_by_repo_field: Dict[Tuple[str, str], MutableSet[str]] = defaultdict(set)
 
         for package in project.packages:
-            for field in ['name', 'keyname']:
+            for field in ['name', 'srcname', 'binname']:
                 if field in package:
                     values_by_repo_field[package['repo'], field].add(package[field])
 
