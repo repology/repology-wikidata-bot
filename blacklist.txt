@@ -1,20 +1,15 @@
-curl      # curl vs. libcurl
-devede    # devede vs. devedeng
-dtorrent  # ctorrent vs. dtorrent
-pycharm   # pro vs. community
-fetchmail # fetchmail vs. fetchmailconf
-openoffice # apache openoffice vs. openoffice.org
-gridengine # mess of sun vs. oracle vs. univa forks
-
-fonts:noto
-
-facter
-gnome-calculator
-
-riot
-
-ion3
-newsboat
-eclipse
-
-libxml2 # vs. libxml1
+# vim: tabstop=20 expandtab softtabstop=20
+curl                # curl vs. libcurl
+devede              # devede vs. devedeng
+dtorrent            # ctorrent vs. dtorrent
+eclipse             # eclipse vs. different plugins (rust, php, java, pcp, ecj etc.) which have the same version, but are distributed separately
+fetchmail           # fetchmail vs. fetchmailconf
+fonts:noto          # no proper versioning scheme
+gridengine          # mess of sun vs. oracle vs. univa forks
+ion3                # ion3 vs. ion version 3-20090110
+libidn2             # vs. libidn
+libxml2             # vs. libxml1
+newsboat            # newsboat vs. newsbeuter
+openoffice          # apache openoffice vs. openoffice.org
+pycharm             # pro vs. community
+riot                # riot-desktop vs. android app
