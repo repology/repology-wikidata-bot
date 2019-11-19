@@ -235,6 +235,8 @@ def run(options: argparse.Namespace) -> None:
             return
 
     performer = ActionPerformer(wikidata)
+
+    actions = [action for action in actions if performer.is_performable(action)]
     for action in progressify(actions, 'Applying actions'):
         performer.perform(action)
 

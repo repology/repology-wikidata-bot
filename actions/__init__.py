@@ -71,3 +71,8 @@ class ActionPerformer:
     def perform(self, action: Action) -> None:
         if isinstance(action, AddPropertyAction):
             self.wikidata.add_claim(action.item, action.prop, action.value, 'adding package information from Repology')
+
+    def is_performable(self, action: Action) -> bool:
+        if isinstance(action, AddPropertyAction):
+            return True
+        return False
