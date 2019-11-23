@@ -1,8 +1,6 @@
 FLAKE8?=	flake8
 MYPY?=		mypy
 
-STATICDIR=	repologyapp/static
-
 all:: lint
 
 lint:: flake8 mypy
