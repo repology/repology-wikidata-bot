@@ -7,9 +7,11 @@ fetchmail           # fetchmail vs. fetchmailconf
 fonts:noto          # no proper versioning scheme
 gridengine          # mess of sun vs. oracle vs. univa forks
 ion3                # ion3 vs. ion version 3-20090110
+jed                 # not sure how to handle ja-jed from FreeBSD which includes outdated third party patchset
 libidn2             # vs. libidn
 libxml2             # vs. libxml1
 newsboat            # newsboat vs. newsbeuter
 openoffice          # apache openoffice vs. openoffice.org
 pycharm             # pro vs. community
 riot                # riot-desktop vs. android app
+slrn                # not sure how to handle ja-slrn from FreebSD which includes outdated third party patchset
