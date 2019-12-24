@@ -60,10 +60,10 @@ def _iterate_repology_project_packages(apiurl: str, begin_name: Optional[str] = 
             if name != begin_name and name == pivot:
                 continue
 
-            yield _RepologyProjectPackages(name, packages)
-
-            if end_name is not None and name >= end_name:
+            if end_name is not None and name > end_name:
                 return
+
+            yield _RepologyProjectPackages(name, packages)
 
         pivot = max(data.keys())
 
