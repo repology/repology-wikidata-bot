@@ -99,6 +99,61 @@ PACKAGE_MAPPINGS = [
         # entries as well
         ignore_missing=True,
     ),
+    RepologyWikidataMapping(
+        repo='crates_io',
+        prop='P4763',
+        field='name',
+        url='https://crates.io/crates/{}',
+        histurls=[
+            'https://crates.io/crates/{}'
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='rubygems',
+        prop='P5566',
+        field='name',
+        url='https://rubygems.org/gems/{}',
+        histurls=[
+            'https://rubygems.org/gems/{}'
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='cran',
+        prop='P5565',
+        field='name',
+        url='https://cran.r-project.org/web/packages/{}/index.html',
+        histurls=[
+            'https://cran.r-project.org/web/packages/{}/index.html',
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='gnu_elpa',
+        prop='P6823',
+        field='name',
+        url='https://elpa.gnu.org/packages/{}.html',
+        histurls=[
+            'https://elpa.gnu.org/packages/{}.html',
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='melpa',
+        prop='P6888',
+        field='name',
+        url='http://melpa.org/#/{}',
+        histurls=[
+            'http://melpa.org/#/{}',
+        ],
+    ),
+    # Not yet: need different kind of name (Template::Toolkit, not Template-Toolkit)
+    # RepologyWikidataMapping(
+    #    repo='metacpan',
+    #    prop='P5779',
+    #    field='name',
+    #    url='https://metacpan.org/pod/{}',
+    #    histurls=[
+    #        'https://metacpan.org/pod/{}',
+    #    ],
+    # ),
 ]
 
 
