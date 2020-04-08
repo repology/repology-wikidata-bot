@@ -144,6 +144,25 @@ PACKAGE_MAPPINGS = [
             'http://melpa.org/#/{}',
         ],
     ),
+    RepologyWikidataMapping(
+        repo='pkgsrc_current',
+        prop='P7966',
+        field='srcname',
+        url='https://pkgsrc.se/{}',
+        histurls=[
+            'https://pkgsrc.se/{}'
+        ],
+    ),
+    RepologyWikidataMapping(
+        repo='openbsd',
+        prop='P7967',
+        field='srcname',
+        url='http://openports.se/{}',
+        histurls=[
+            'http://openports.se/{}',
+            'https://cvsweb.openbsd.org/ports/{}'
+        ],
+    ),
     # Not yet: need different kind of name (Template::Toolkit, not Template-Toolkit)
     # RepologyWikidataMapping(
     #    repo='metacpan',
