@@ -15,3 +15,4 @@ openoffice          # apache openoffice vs. openoffice.org
 pycharm             # pro vs. community
 riot                # riot-desktop vs. android app
 slrn                # not sure how to handle ja-slrn from FreebSD which includes outdated third party patchset
+tesseract-ocr       # mixed with tesseract-data # XXX: fix in Repology
