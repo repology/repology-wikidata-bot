@@ -163,6 +163,15 @@ PACKAGE_MAPPINGS = [
             'https://cvsweb.openbsd.org/ports/{}'
         ],
     ),
+    # Does not provide link to a single package
+    # RepologyWikidataMapping(
+    #    repo='gnuguix',
+    #    prop='P6765',
+    #    field='name',
+    #    url='-',
+    #    histurls=[
+    #    ],
+    # ),
     # Not yet: need different kind of name (Template::Toolkit, not Template-Toolkit)
     # RepologyWikidataMapping(
     #    repo='metacpan',
