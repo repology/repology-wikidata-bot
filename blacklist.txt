@@ -12,6 +12,7 @@ libidn2             # vs. libidn
 libxml2             # vs. libxml1
 llvm                # llvm vs. lldb and other parts
 luatex              # contained in texlive-core in arch, not traceable by repology, creates false positive
+minetest-game       # some packages contain it within minetest
 newsboat            # newsboat vs. newsbeuter
 openoffice          # apache openoffice vs. openoffice.org
 pycharm             # pro vs. community
