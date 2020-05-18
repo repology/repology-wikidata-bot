@@ -313,9 +313,12 @@ def run(options: argparse.Namespace) -> None:
         return
 
     if not options.yes:
-        print('Apply listed changes [Y/n]? ', end='', file=sys.stderr)
-        if input() not in ['', 'y', 'Y']:
-            return
+        while True:
+            key = input('Apply listed changes [Y/n]? ')
+            if key in ['', 'y', 'Y']:
+                break
+            if key in ['n', 'N']:
+                return
 
     performer = ActionPerformer(wikidata)
 
