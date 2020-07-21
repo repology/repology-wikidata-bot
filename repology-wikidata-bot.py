@@ -163,6 +163,16 @@ PACKAGE_MAPPINGS = [
             'https://cvsweb.openbsd.org/ports/{}'
         ],
     ),
+    RepologyWikidataMapping(
+        repo='homebrew',
+        prop='P8443',
+        field='srcname',
+        url='https://formulae.brew.sh/formula/{}',
+        histurls=[
+            'https://formulae.brew.sh/formula/{}',
+            'https://github.com/Homebrew/homebrew-core/blob/master/Formula/{}.rb'
+        ],
+    ),
     # Does not provide link to a single package
     # RepologyWikidataMapping(
     #    repo='gnuguix',
